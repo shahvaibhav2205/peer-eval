@@ -6,7 +6,7 @@
                 <ul class="list-unstyled components">
                    <p><?php 
                    $user_name = $user->get_user_name($_SESSION['email']);
-                   echo "Hello, ".$user_name['first_name']." ".$user_name['last_name']; ?></p>
+                   echo "Hello, ".$user_name['firstname']." ".$user_name['lastname']; ?></p>
                     <li>
                         <a href="templates.php">Templates</a>
                     </li>

@@ -57,7 +57,7 @@ class User extends Password{
 
 	public function get_user_name($email){
 		try {
-			$stmt = $this->_db->prepare('SELECT first_name, last_name FROM faculty WHERE email = :email');
+			$stmt = $this->_db->prepare('SELECT firstname, lastname FROM faculty WHERE email = :email');
 			$stmt->execute(array('email' => $email));
 
 			return $stmt->fetch();

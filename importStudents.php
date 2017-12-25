@@ -14,7 +14,7 @@ if(isset($_POST["Import"])){
              {
 
 
-               $stmt = $db->prepare("INSERT into student (   first_name,last_name,email) 
+               $stmt = $db->prepare("INSERT into student (   firstname,lastname,email) 
                    values ('".$getData[0]."','".$getData[1]."','".$getData[2]."')");
                     
                     if($stmt->execute()){

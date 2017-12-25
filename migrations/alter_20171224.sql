@@ -1,0 +1,3 @@
+ALTER TABLE `student` CHANGE `first_name` `firstname` VARCHAR(255) CHARACTER SET latin1 COLLATE latin1_swedish_ci NOT NULL, CHANGE `last_name` `lastname` VARCHAR(255) CHARACTER SET latin1 COLLATE latin1_swedish_ci NOT NULL;
+ALTER TABLE `student_class` CHANGE `staus` `status` INT(11) NOT NULL;
+ALTER TABLE `faculty` CHANGE `first_name` `firstname` VARCHAR(255) CHARACTER SET latin1 COLLATE latin1_swedish_ci NOT NULL, CHANGE `last_name` `lastname` VARCHAR(255) CHARACTER SET latin1 COLLATE latin1_swedish_ci NOT NULL, CHANGE `university_id` `universityid` INT(11) NOT NULL;
