@@ -168,8 +168,8 @@ require('layout/header.php');
       </tr></thead><tbody>";
       foreach ($classStudents as $row) {
         $studentid = $row["sid"];
-        ?><tr><td contenteditable="true" data-old_value="<?php echo $row["first_name"]; ?>" onBlur="saveInlineEdit(this,'first_name','<?php echo $studentid ?>')" onClick="highlightEdit(this);"> <?php echo $row['first_name'] ?></td>
-        <td contenteditable="true" data-old_value="<?php echo $row["last_name"]; ?>" onBlur="saveInlineEdit(this,'last_name','<?php echo $studentid ?>')" onClick="highlightEdit(this);"> <?php echo $row['last_name'] ?></td>
+        ?><tr><td contenteditable="true" data-old_value="<?php echo $row["firstname"]; ?>" onBlur="saveInlineEdit(this,'firstname','<?php echo $studentid ?>')" onClick="highlightEdit(this);"> <?php echo $row['firstname'] ?></td>
+        <td contenteditable="true" data-old_value="<?php echo $row["lastname"]; ?>" onBlur="saveInlineEdit(this,'lastname','<?php echo $studentid ?>')" onClick="highlightEdit(this);"> <?php echo $row['lastname'] ?></td>
         <td contenteditable="true" data-old_value="<?php echo $row["email"]; ?>" onBlur="saveInlineEdit(this,'email','<?php echo $studentid ?>')" onClick="highlightEdit(this);"> <?php echo $row['email'] ?></td>
         <td contenteditable="true" data-old_value="<?php echo $row["groupid"]; ?>" onBlur="saveInlineEdit(this,'groupid','<?php echo $studentid ?>')" onClick="highlightEdit(this);"> <?php echo $row['groupid'] ?></td>
         <td><a href="#" class="btn btn-link delete-student" data-attr="<?php echo $row['sid'] ?>">Delete</a>
