@@ -38,8 +38,6 @@ require('layout/header.php');
                             <th> Semester</th>
                 			<th> Class Number</th>
                             <th> Class Name</th>
-                            <th> Deadline</th>
-                            <th> Class Weight</th>
                 			<th> Edit </th>
                             <th> Students </th>
                 		</tr>
@@ -54,10 +52,8 @@ require('layout/header.php');
                                 <td><?php echo $fclass['semester']." ".$fclass['year']; ?></td>
                 				<td><?php echo $fclass['cprefix']." ".$fclass['cnumber']; ?></td>
                                 <td><?php echo $fclass['cname']; ?></td>
-                                <td><?php echo date("m/d/Y", strtotime($fclass['deadline'])); ?></td>
-                                <td><?php echo $fclass['weight']."%"; ?></td>
-                				<td><a href="manage-classes.php?cid=<?php echo $fclass['cid'] ?>" class="btn btn-link">Edit</a></td>
-                                <td><a href="class-students.php?cid=<?php echo $fclass['cid'] ?>" class="btn btn-link">Students</a></td>
+                				<td><a href="manage-classes.php?class=<?php echo $fclass['cid'] ?>" class="btn btn-link">Edit</a></td>
+                                <td><a href="students.php?class=<?php echo $fclass['cid'] ?>" class="btn btn-link">Students</a></td>
                 			</tr>
                 			<?php
                 		}
@@ -71,11 +67,4 @@ require('layout/header.php');
 //include header template
 require('layout/footer.php'); 
 ?>
- <script type="text/javascript">
-             $(document).ready(function () {
-                 $('#sidebarCollapse').on('click', function () {
-                     $('#sidebar').toggleClass('active');
-                     $(this).toggleClass('active');
-                 });
-             });
-         </script>
+

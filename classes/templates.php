@@ -11,7 +11,7 @@ class Templates{
 
     public function get_user_templates($fid){
     	try {
-			$stmt = $this->_db->prepare('SELECT * FROM templates WHERE fid = :fid');
+			$stmt = $this->_db->prepare('SELECT * FROM templates WHERE fid = :fid and active=1');
 			$stmt->execute(array('fid' => $fid));
 
 			return $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -33,6 +33,18 @@ class Templates{
 		    echo '<p class="bg-danger">'.$e->getMessage().'</p>';
 		}
 
+    }
+
+    public function delete_template($tid){
+    	try {
+			$stmt = $this->_db->prepare('update templates set active=0 where tid=:tid');
+			$stmt->execute(array('tid' => $tid));
+
+			return "success";
+
+		} catch(PDOException $e) {
+		    echo '<p class="bg-danger">'.$e->getMessage().'</p>';
+		}
     }
 
  

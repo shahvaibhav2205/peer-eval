@@ -153,13 +153,7 @@ require('layout/header.php');
 require('layout/footer.php'); 
 ?>
  <script type="text/javascript">
-             $(document).ready(function () {
-                 $('#sidebarCollapse').on('click', function () {
-                     $('#sidebar').toggleClass('active');
-                     $(this).toggleClass('active');
-                 });
-             });
-    
+        
     <?php 
     if(isset($_GET['tid'])) { ?>
     var count = <?php echo count($template_details) ?>;

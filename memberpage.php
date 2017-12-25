@@ -51,11 +51,3 @@ require('layout/header.php');
 //include header template
 require('layout/footer.php'); 
 ?>
- <script type="text/javascript">
-             $(document).ready(function () {
-                 $('#sidebarCollapse').on('click', function () {
-                     $('#sidebar').toggleClass('active');
-                     $(this).toggleClass('active');
-                 });
-             });
-         </script>

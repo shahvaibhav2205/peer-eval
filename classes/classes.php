@@ -22,6 +22,18 @@ class Classes{
 
     }
 
+    public function get_class_details($cid, $fid){
+    	try {
+			$stmt = $this->_db->prepare('SELECT * FROM class WHERE cid=:cid and fid = :fid');
+			$stmt->execute(array('cid' => $cid, 'fid' => $fid));
+
+			return $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+		} catch(PDOException $e) {
+		    echo '<p class="bg-danger">'.$e->getMessage().'</p>';
+		}
+    }
+
  
 
  
