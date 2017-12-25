@@ -10,39 +10,22 @@ class Students
     	$this->_db = $db;
     }
 
-    function get_all_records()
-    {
-        $stmt = $this->_db->prepare('SELECT * FROM student, student_class where student.sid = student_class.sid and student_class.cid=1');
-        $stmt->execute();
-
-                //return $stmt->fetch();
-
-        if ($stmt->fetchColumn() > 0) {
-            echo "<div class='table-responsive'><table id='myTable' class='table'>
-                  <thead><tr>
-                      <th>First Name</th>
-                      <th>Last Name</th>
-                      <th>Email</th>
-                      <th>Group</th>
-                  </tr></thead><tbody>";
-
-            while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
-                $studentid = $row["sid"];
-                ?><tr>
-                    <td contenteditable="true" data-old_value="<?php echo $row["firstname"]; ?>" onBlur="saveInlineEdit(this,'firstname','<?php echo $studentid ?>')" onClick="highlightEdit(this);"> <?php echo $row['firstname'] ?></td>
-                    <td contenteditable="true" data-old_value="<?php echo $row["lastname"]; ?>" onBlur="saveInlineEdit(this,'lastname','<?php echo $studentid ?>')" onClick="highlightEdit(this);"> <?php echo $row['lastname'] ?></td>
-                    <td contenteditable="true" data-old_value="<?php echo $row["email"]; ?>" onBlur="saveInlineEdit(this,'email','<?php echo $studentid ?>')" onClick="highlightEdit(this);"> <?php echo $row['email'] ?></td>
-                    <td contenteditable="true" data-old_value="<?php echo $row["groupid"]; ?>" onBlur="saveInlineEdit(this,'groupid','<?php echo $studentid ?>')" onClick="highlightEdit(this);"> <?php echo $row['groupid'] ?></td>
-                </tr>
-                <?php
-            }
-
-            echo "</tbody></table></div>";
-
-        } else {
-            echo "you have no records";
-        }
+	function get_all_class_students($cid){
+    	$stmt = $this->_db->prepare('SELECT * FROM student, student_class where student.sid = student_class.sid and student_class.cid=:cid');
+    	$stmt->execute(array('cid' => $cid));
+    	return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
+ 	function delete_student($sid, $cid){
+ 		$stmt = $this->_db->prepare('delete FROM student_class where sid=:sid and cid=:cid');
+     	$stmt->execute(array('sid' => $sid, 'cid' => $cid));
+     	echo "success";	 
+ 	}
+
+ 	function get_all_students(){
+ 		 $stmt = $this->_db->prepare('SELECT sid, email FROM student');
+    	 $stmt->execute();
+     	 return $stmt->fetchAll(PDO::FETCH_ASSOC);
+ 	}
 
     public function getStudent($sId)
     {
@@ -80,5 +63,6 @@ SQL;
             return false;
         }
     }
+
 }
 ?>

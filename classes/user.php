@@ -2,13 +2,13 @@
 include('password.php');
 class User extends Password{
 
-	private $_db;
+    private $_db;
 
-	function __construct($db){
-		parent::__construct();
+    function __construct($db){
+    	parent::__construct();
 
-		$this->_db = $db;
-	}
+    	$this->_db = $db;
+    }
 
 	private function getFalcultyHash($email)
 	{
@@ -103,7 +103,7 @@ class User extends Password{
 			return $stmt->fetch();
 
 		} catch(PDOException $e) {
-			echo '<p class="bg-danger">'.$e->getMessage().'</p>';
+		    echo '<p class="bg-danger">'.$e->getMessage().'</p>';
 		}
 	}
 
@@ -115,7 +115,7 @@ class User extends Password{
 			return $stmt->fetch();
 
 		} catch(PDOException $e) {
-			echo '<p class="bg-danger">'.$e->getMessage().'</p>';
+		    echo '<p class="bg-danger">'.$e->getMessage().'</p>';
 		}
 	}
 

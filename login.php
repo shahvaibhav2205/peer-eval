@@ -43,7 +43,11 @@ if(isset($_POST['submit'])){
     $errorCode = base64_decode($_GET['error-code']);
     switch ($errorCode) {
         case 100 : { // case when randomKey is invalid
-            $errors[] = "Invalid URL.";
+            $errors[] = "Invalid key.";
+            break;
+        }
+        case 101 : { // case when classId is invalid
+            $errors[] = "Invalid class.";
             break;
         }
         case 102 : { // case when class doesn't have that student
