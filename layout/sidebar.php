@@ -5,12 +5,12 @@
 
                 <ul class="list-unstyled components">
                    <p><?php
-                        if ($_SESSION["userType"] === "student") {
+                        if ((isset($_SESSION['userType'])) && $_SESSION["userType"] === "student") {
                             $user_name = $user->getStudentName($_SESSION['email']);
                         } else {
                             $user_name = $user->getFacultyName($_SESSION['email']);
                         }
-
+                  
                    echo "Hello, ".$user_name['firstname']." ".$user_name['lastname']; ?></p>
                     <li>
                         <a href="templates.php">Templates</a>

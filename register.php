@@ -134,7 +134,7 @@ if(isset($_POST['submit'])){
 				$mail->addAddress($to);
 				$mail->subject($subject);
 				$mail->body($body);
-				$mail->send();
+				//$mail->send();
 
 				//redirect to index page
 				$action = "facultyJoined";
@@ -228,7 +228,7 @@ require('layout/header.php');
 require('layout/footer.php');
 
 // unset student session
-if ($action === "studentJoined") {
+if (!empty($action) && $action === "studentJoined") {
     unset($_SESSION['userType']);
     unset($_SESSION['messages']);
     unset($_SESSION['userDetails']);

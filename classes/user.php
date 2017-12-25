@@ -47,13 +47,15 @@ class User extends Password{
 	}
 
 	public function login($email,$password){
-		//if (!$this->isValidUsername($username)) return false;
+		
 		if (strlen($password) < 3) return false;
 
 		$row = $this->getStudentHash($email);
 
 		if (empty($row)) {
 			$row = $this->getFalcultyHash($email);
+		}
+		else{
 			$_SESSION["userType"] = "student";
 		}
 
