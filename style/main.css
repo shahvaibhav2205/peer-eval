@@ -1,0 +1,28 @@
+.error{
+	color:#fff;
+	padding:0.5rem 0;
+	font-size: 0.8rem;
+}
+.lead.bg-success{
+	color: #fff;
+}
+.table-responsive{
+	display: table !important;
+	font-size:0.8rem;
+}
+.btn-group-sm>.btn, .btn-sm{
+	    padding: .25rem 1rem;
+    font-size: .75rem;
+}
+.form-control{
+	font-size: 0.75em;
+}
+.row.fields{
+	margin-bottom: 2rem;
+}
+.row.fields div{
+	margin-bottom: 1rem;
+}
+.btn-link{
+	font-size:0.8rem;
+}
