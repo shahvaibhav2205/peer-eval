@@ -51,7 +51,7 @@ if(isset($_POST['submit'])){
 
 	//email validation for student with same email as found with randomKey
 
-	if($email != $_SESSION['userDetails']['email']){
+	if(!empty($_SESSION['userDetails']['email']) && $email != $_SESSION['userDetails']['email']){
 		$errors[] = 'You can only register with the email you are invited with!';
 	}
 
@@ -112,7 +112,7 @@ if(isset($_POST['submit'])){
 
 			} else {
 				//insert into database with a prepared statement for faculty
-				$stmt = $db->prepare('INSERT INTO $userType (firstname, lastname, password, email, active) VALUES (:firstname, :lastname, :password, :email, :active)');
+				$stmt = $db->prepare("INSERT INTO $userType (firstname, lastname, password, email, active) VALUES (:firstname, :lastname, :password, :email, :active)");
 				$stmt->execute(array(
 					':firstname' => $firstname,
 					':lastname' => $lastname,
@@ -226,4 +226,12 @@ require('layout/header.php');
 <?php
 //include header template
 require('layout/footer.php');
+
+// unset student session
+if ($action === "studentJoined") {
+    unset($_SESSION['userType']);
+    unset($_SESSION['messages']);
+    unset($_SESSION['userDetails']);
+    unset($_SESSION['messageType']);
+}
 ?>

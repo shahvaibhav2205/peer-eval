@@ -4,8 +4,13 @@
                 </div>
 
                 <ul class="list-unstyled components">
-                   <p><?php 
-                   $user_name = $user->get_user_name($_SESSION['email']);
+                   <p><?php
+                        if ($_SESSION["userType"] === "student") {
+                            $user_name = $user->getStudentName($_SESSION['email']);
+                        } else {
+                            $user_name = $user->getFacultyName($_SESSION['email']);
+                        }
+
                    echo "Hello, ".$user_name['firstname']." ".$user_name['lastname']; ?></p>
                     <li>
                         <a href="templates.php">Templates</a>
