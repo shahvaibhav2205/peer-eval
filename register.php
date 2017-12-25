@@ -3,14 +3,21 @@
 //if logged in redirect to members page
 if( $user->is_logged_in() ){ header('Location: memberpage.php'); exit(); }
 
-//if form has been submitted process it
 
+//if form has been submitted process it
+if ($_SESSION['userType'] === "student") {
+	$userType = $_SESSION['userType'];
+} else {
+	$userType = "faculty";
+}
+$messages = [];
+$errors = [];
 if(isset($_POST['submit'])){
 	
-    if (trim($_POST['firstname'])=="") $error[] = "Please enter firstname";
-    if (trim($_POST['lastname'])=="") $error[] = "Please enter lastname";
-    if (trim($_POST['email'])=="") $error[] = "Please enter email";
-    if (trim($_POST['password'])=="") $error[] = "Please enter password";
+	if (trim($_POST['firstname'])=="") $errors[] = "Please enter firstname";
+	if (trim($_POST['lastname'])=="") $errors[] = "Please enter lastname";
+	if (trim($_POST['email'])=="") $errors[] = "Please enter email";
+	if (trim($_POST['password'])=="") $errors[] = "Please enter password";
 
 	
 	$firstname = $_POST['firstname'];
@@ -19,48 +26,65 @@ if(isset($_POST['submit'])){
 
 	//very basic validation
 	/*if(!$user->isValidUsername($username)){
-	 $error[] = 'Usernames must be at least 3 Alphanumeric characters';
+	 $errors[] = 'Usernames must be at least 3 Alphanumeric characters';
 	} else {
 		$stmt = $db->prepare('SELECT email FROM faculty WHERE email = :email');
 		$stmt->execute(array(':username' => $username));
 		$row = $stmt->fetch(PDO::FETCH_ASSOC);
 
 		if(!empty($row['username'])){
-			$error[] = 'Username provided is already in use.';
+			$errors[] = 'Username provided is already in use.';
 		}
 
 	}*/
 	if(strlen($_POST['password']) < 3){
-		$error[] = 'Password is too short.';
+		$errors[] = 'Password is too short.';
 	}
 
 	if(strlen($_POST['passwordConfirm']) < 3){
-		$error[] = 'Confirm password is too short.';
+		$errors[] = 'Confirm password is too short.';
 	}
 
 	if($_POST['password'] != $_POST['passwordConfirm']){
-		$error[] = 'Passwords do not match.';
+		$errors[] = 'Passwords do not match.';
+	}
+
+	//email validation for student with same email as found with randomKey
+
+	if(!empty($_SESSION['userDetails']['email']) && $email != $_SESSION['userDetails']['email']){
+		$errors[] = 'You can only register with the email you are invited with!';
 	}
 
 	//email validation
 	
 	if(!filter_var($email, FILTER_VALIDATE_EMAIL)){
-	    $error[] = 'Please enter a valid email address';
+		$errors[] = 'Please enter a valid email address';
 	} else {
-		$stmt = $db->prepare('SELECT email FROM faculty WHERE email = :email');
+		$query = "SELECT email FROM $userType WHERE email = :email";
+
+		if ($userType === "student") {
+			$query .= " and isactive = 1";
+		}
+		$stmt = $db->prepare($query);
+
 		$stmt->execute(array(':email' => $email));
 		$row = $stmt->fetch(PDO::FETCH_ASSOC);
 
 		if(!empty($row['email'])){
-			$error[] = 'Email provided is already in use.';
+			$errors[] = 'Email provided is already in use.';
 		}
 
 	}
 
+	if (!empty($errors)) {
+		$messages = $errors;
+		$messagesType = "error";
+	}
+
+	$userDetails = $_POST;
 
 	//if no errors have been created carry on
-	if(!isset($error)){
-
+	if(empty($errors)){
 		//hash the password
 		$hashedpassword = $user->password_hash($_POST['password'], PASSWORD_BCRYPT);
 
@@ -69,42 +93,64 @@ if(isset($_POST['submit'])){
 
 		try {
 
-			//insert into database with a prepared statement
-			$stmt = $db->prepare('INSERT INTO faculty (first_name, last_name, password,email, active) VALUES (:firstname, :lastname, :password, :email, :active)');
-			$stmt->execute(array(
-				':firstname' => $firstname,
-				':lastname' => $lastname,
-				':password' => $hashedpassword,
-				':email' => $email,
-				':active' => $activasion
-			));
-			$id = $db->lastInsertId('fid');
+			if ($userType === "student") {
+				//insert into database with a prepared statement for student
 
-			//send email
-			$to = $_POST['email'];
-			$subject = "Registration Confirmation";
-			$body = "<p>Thank you for registering at demo site.</p>
-			<p>To activate your account, please click on this link: <a href='".DIR."activate.php?x=$id&y=$activasion'>".DIR."activate.php?x=$id&y=$activasion</a></p>
+				$query = "UPDATE $userType SET firstname = :firstname, lastname = :lastname, password = :password, isactive = 1 WHERE email = :email";
+
+				$stmt = $db->prepare($query);
+				$output = $stmt->execute(array(
+					':firstname' => $firstname,
+					':lastname' => $lastname,
+					':password' => $hashedpassword,
+					':email' => $email
+				));
+
+				if ($output) {
+					$action = "studentJoined";
+				}
+
+			} else {
+				//insert into database with a prepared statement for faculty
+				$stmt = $db->prepare("INSERT INTO $userType (firstname, lastname, password, email, active) VALUES (:firstname, :lastname, :password, :email, :active)");
+				$stmt->execute(array(
+					':firstname' => $firstname,
+					':lastname' => $lastname,
+					':password' => $hashedpassword,
+					':email' => $email,
+					':active' => $activasion
+				));
+				$id = $db->lastInsertId('fid');
+
+				//send email
+				$to = $_POST['email'];
+				$subject = "Registration Confirmation";
+				$body = "<p>Thank you for registering at demo site.</p>
+			<p>To activate your account, please click on this link: <a href='" . DIR . "activate.php?x=$id&y=$activasion'>" . DIR . "activate.php?x=$id&y=$activasion</a></p>
 			<p>Regards Site Admin</p>";
 
-			$mail = new Mail();
-			$mail->setFrom(SITEEMAIL);
-			$mail->addAddress($to);
-			$mail->subject($subject);
-			$mail->body($body);
-			$mail->send();
+				$mail = new Mail();
+				$mail->setFrom(SITEEMAIL);
+				$mail->addAddress($to);
+				$mail->subject($subject);
+				$mail->body($body);
+				$mail->send();
 
-			//redirect to index page
-			header('Location: register.php?action=joined');
-			exit;
+				//redirect to index page
+				$action = "facultyJoined";
+			}
 
 		//else catch the exception and show the error.
 		} catch(PDOException $e) {
-		    $error[] = $e->getMessage();
+			$errors[] = $e->getMessage();
 		}
 
 	}
 
+} else if (!empty($_SESSION['messages'])) { //get notice and student user details
+	$messages = $_SESSION['messages'];
+	$messagesType = $_SESSION['messageType'];
+	$userDetails = $_SESSION['userDetails'];
 }
 
 //define page title
@@ -119,7 +165,7 @@ require('layout/header.php');
 
 	<div class="row">
 
-	    <div class="col-xs-12 col-sm-8 col-md-6 mx-auto">
+		<div class="col-xs-12 col-sm-8 col-md-6 mx-auto">
 			<form role="form" method="post" action="" autocomplete="off">
 				<h2> Sign Up</h2>
 				<p class="lead"> Enter the following details to sign up</p>
@@ -127,26 +173,29 @@ require('layout/header.php');
 
 				<?php
 				//check for any errors
-				//print_r($error);
-				if(isset($error)){
-					foreach($error as $error){
-						echo '<p class="bg-danger error">'.$error.'</p>';
+
+				if (isset($messagesType)){
+					$messageClass = ($messagesType === "error") ? "bg-danger" : "bg-success";
+					foreach($messages as $message){
+						echo '<p class="'.$messageClass.' info">'.$message.'</p>';
 					}
 				}
 
 				//if action is joined show sucess
-				if(isset($_GET['action']) && $_GET['action'] == 'joined'){
-					echo "<p class='lead bg-success'>Registration successful, please check your email to activate your account.</p>";
+				if (isset($action) && $action == 'facultyJoined') {
+					echo "<p class='info bg-success'>Registration successful, please check your email to activate your account.</p>";
+				} else if (isset($action) && $action == 'studentJoined') {
+					echo "<p class='info bg-success'>Registration successful, please Login to continue.</p>";
 				}
 				?>
 				<div class="form-group">
-					<input type="text" name="firstname" id="firstname" class="form-control input-lg" placeholder="First Name" value="<?php if(isset($error)){ echo htmlspecialchars($_POST['firstname'], ENT_QUOTES); } ?>" tabindex="1">
+					<input type="text" name="firstname" id="firstname" class="form-control input-lg" placeholder="First Name" value="<?php if(isset($messagesType)){ echo htmlspecialchars($userDetails['firstname'], ENT_QUOTES); } ?>" tabindex="1">
 				</div>
 				<div class="form-group">
-					<input type="text" name="lastname" id="lastname" class="form-control input-lg" placeholder="Last Name" value="<?php if(isset($error)){ echo htmlspecialchars($_POST['lastname'], ENT_QUOTES); } ?>" tabindex="1">
+					<input type="text" name="lastname" id="lastname" class="form-control input-lg" placeholder="Last Name" value="<?php if(isset($messagesType)){ echo htmlspecialchars($userDetails['lastname'], ENT_QUOTES); } ?>" tabindex="1">
 				</div>
 				<div class="form-group">
-					<input type="email" name="email" id="email" class="form-control input-lg" placeholder="Email Address" value="<?php if(isset($error)){ echo htmlspecialchars($_POST['email'], ENT_QUOTES); } ?>" tabindex="2">
+					<input type="email" name="email" id="email" class="form-control input-lg" placeholder="Email Address" value="<?php if(isset($messagesType)){ echo htmlspecialchars($userDetails['email'], ENT_QUOTES); } ?>" tabindex="2">
 				</div>
 				<div class="row">
 					<div class="col-xs-6 col-sm-6 col-md-6">
@@ -177,4 +226,12 @@ require('layout/header.php');
 <?php
 //include header template
 require('layout/footer.php');
+
+// unset student session
+if ($action === "studentJoined") {
+    unset($_SESSION['userType']);
+    unset($_SESSION['messages']);
+    unset($_SESSION['userDetails']);
+    unset($_SESSION['messageType']);
+}
 ?>

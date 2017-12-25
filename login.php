@@ -5,19 +5,20 @@ require_once('includes/config.php');
 //check if already logged in move to home page
 if( $user->is_logged_in() ){ header('Location: memberpage.php'); exit(); }
 
+
 //process login form if submitted
 if(isset($_POST['submit'])){
 
-	if (!isset($_POST['email'])) $error[] = "Please fill out all fields";
-	if (!isset($_POST['password'])) $error[] = "Please fill out all fields";
+	if (!isset($_POST['email'])) $errors[] = "Please fill out all fields";
+	if (!isset($_POST['password'])) $errors[] = "Please fill out all fields";
 
 	$email = trim($_POST['email']);
 	if(!filter_var($email, FILTER_VALIDATE_EMAIL)){
-	    $error[] = 'Please enter a valid email address';
+	    $errors[] = 'Please enter a valid email address';
 	} else {
 	//if ( $user->isValidUsername($username)){
 		if (!isset($_POST['password'])){
-			$error[] = 'A password must be entered';
+			$errors[] = 'A password must be entered';
 		}
 		$password = $_POST['password'];
 
@@ -30,15 +31,34 @@ if(isset($_POST['submit'])){
 			exit;
 
 		} else {
-			$error[] = 'Wrong username or password or your account has not been activated.';
+			$errors[] = 'Wrong username or password or your account has not been activated.';
 		}
 	} /*else{
-		$error[] = 'Usernames are required to be Alphanumeric, and between 3-16 characters long';
+		$errors[] = 'Usernames are required to be Alphanumeric, and between 3-16 characters long';
 	}*/
 
 
-
-}//end if submit
+//end if submit
+} else if (!empty($_GET['error-code'])) { // redirected to login page with error
+    $errorCode = base64_decode($_GET['error-code']);
+    switch ($errorCode) {
+        case 100 : { // case when randomKey is invalid
+            $errors[] = "Invalid URL.";
+            break;
+        }
+        case 102 : { // case when class doesn't have that student
+            $errors[] = "Sorry, you are not assigned to class.";
+            break;
+        }
+        case 103 : { // ...
+            $errors[] = "...";
+            break;
+        }
+        default : {
+            $errors[] = "There was a problem, please contact support.";
+        }
+    }
+}
 
 //define page title
 $title = 'Login to your account';
@@ -61,8 +81,8 @@ require('layout/header.php');
 
 				<?php
 				//check for any errors
-				if(isset($error)){
-					foreach($error as $error){
+				if(isset($errors)){
+					foreach($errors as $error){
 						echo '<p class="bg-danger error">'.$error.'</p>';
 					}
 				}
