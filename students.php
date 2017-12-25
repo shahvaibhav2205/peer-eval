@@ -59,7 +59,7 @@ if(isset($_POST["Import"])){
 
       if(!in_array($getData[2], $emails)){
 
-        $stmt = $db->prepare("INSERT into student(first_name, last_name, email) values ('".$getData[0]."','".$getData[1]."','".$getData[2]."')");
+        $stmt = $db->prepare("INSERT into student(firstname, lastname, email) values ('".$getData[0]."','".$getData[1]."','".$getData[2]."')");
         if($stmt->execute()){
           $sid = $db->lastInsertId();
         }

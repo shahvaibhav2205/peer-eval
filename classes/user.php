@@ -10,7 +10,8 @@ class User extends Password{
     	$this->_db = $db;
     }
 
-	private function get_user_hash($email){
+	private function getFalcultyHash($email)
+	{
 
 		try {
 			$stmt = $this->_db->prepare('SELECT password, email, fid FROM faculty WHERE email = :email AND active="Yes" ');
@@ -19,11 +20,26 @@ class User extends Password{
 			return $stmt->fetch();
 
 		} catch(PDOException $e) {
-		    echo '<p class="bg-danger">'.$e->getMessage().'</p>';
+			echo '<p class="bg-danger">'.$e->getMessage().'</p>';
 		}
 	}
 
-	public function isValidUsername($username){
+	private function getStudentHash($email)
+	{
+
+		try {
+			$stmt = $this->_db->prepare('SELECT password, email, sid FROM student WHERE email = :email AND isactive=1 ');
+			$stmt->execute(array('email' => $email));
+
+			return $stmt->fetch();
+
+		} catch(PDOException $e) {
+			echo '<p class="bg-danger">'.$e->getMessage().'</p>';
+		}
+	}
+
+	public function isValidUsername($username)
+	{
 		if (strlen($username) < 3) return false;
 		if (strlen($username) > 17) return false;
 		if (!ctype_alnum($username)) return false;
@@ -34,14 +50,24 @@ class User extends Password{
 		//if (!$this->isValidUsername($username)) return false;
 		if (strlen($password) < 3) return false;
 
-		$row = $this->get_user_hash($email);
+		$row = $this->getStudentHash($email);
+
+		if (empty($row)) {
+			$row = $this->getFalcultyHash($email);
+			$_SESSION["userType"] = "student";
+		}
 
 		if($this->password_verify($password,$row['password']) == 1){
 
-		    $_SESSION['loggedin'] = true;
-		    $_SESSION['email'] = $row['email'];
-		    $_SESSION['fid'] = $row['fid'];
-		    return true;
+			$_SESSION['loggedin'] = true;
+			$_SESSION['email'] = $row['email'];
+
+			if ($_SESSION["userType"] === "student") {
+				$_SESSION['sid'] = $row['sid'];
+			} else {
+				$_SESSION['fid'] = $row['fid'];
+			}
+			return true;
 		}
 	}
 
@@ -55,9 +81,23 @@ class User extends Password{
 		}
 	}
 
-	public function get_user_name($email){
+	public function getFacultyName($email)
+	{
 		try {
-			$stmt = $this->_db->prepare('SELECT first_name, last_name FROM faculty WHERE email = :email');
+			$stmt = $this->_db->prepare('SELECT firstname, lastname FROM faculty WHERE email = :email');
+			$stmt->execute(array('email' => $email));
+
+			return $stmt->fetch();
+
+		} catch(PDOException $e) {
+			echo '<p class="bg-danger">'.$e->getMessage().'</p>';
+		}
+	}
+
+	public function getStudentName($email)
+	{
+		try {
+			$stmt = $this->_db->prepare('SELECT firstname, lastname FROM student WHERE email = :email');
 			$stmt->execute(array('email' => $email));
 
 			return $stmt->fetch();
