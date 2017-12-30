@@ -134,7 +134,7 @@ if(isset($_POST['submit'])){
 				$mail->addAddress($to);
 				$mail->subject($subject);
 				$mail->body($body);
-				//$mail->send();
+				$mail->send();
 
 				//redirect to index page
 				$action = "facultyJoined";

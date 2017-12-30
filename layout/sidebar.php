@@ -12,11 +12,16 @@
                         }
                   
                    echo "Hello, ".$user_name['firstname']." ".$user_name['lastname']; ?></p>
+
+                    <p> <a class="btn btn-success btn-sm" href="manage-peerevals.php">Start Peer Eval</a></p>
                     <li>
                         <a href="templates.php">Templates</a>
                     </li>
                     <li>
                         <a href="classes.php">Classes</a>
+                    </li>
+                    <li>
+                        <a href="peerevals.php">Peer Evals</a>
                     </li>
                     
                 </ul>

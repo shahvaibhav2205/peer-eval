@@ -27,8 +27,15 @@ if(isset($_POST['submit'])){
 		$stmt->execute(array(':cprefix' => $_POST['cprefix'], ':cnumber' => $_POST['cnumber'], ':semester' => $_POST['csemester'], ':year' => $_POST['cyear'] ));
 		$row = $stmt->fetch(PDO::FETCH_ASSOC);
 
-		if(!empty($row['cid'])){
-			$errors[] = 'You have already added the same class for the same semester.';
+		if(empty($cid)){
+			if(!empty($row['cid'])){
+				$errors[] = 'You have already added the same class for the same semester.';
+			}
+		}
+		else{
+			if(!empty($row['cid']) && $row['cid']!=$cid){
+				$errors[] = 'You have already added the same class for the same semester.';
+			}
 		}
 
 	//if no errors have been created carry on
