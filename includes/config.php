@@ -34,9 +34,12 @@ include('classes/user.php');
 include('classes/students.php');
 include('classes/templates.php');
 include('classes/classes.php');
+include('classes/peerevals.php');
 include('classes/phpmailer/mail.php');
 $user = new User($db);
 $student = new Students($db);
 $template = new Templates($db);
 $class = new Classes($db);
+$peereval = new PeerEvals($db);
+
 ?>

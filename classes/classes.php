@@ -34,7 +34,29 @@ class Classes{
 		}
     }
 
- 
+    public function get_class_number_students($cid){
+		try {
+			$stmt = $this->_db->prepare('SELECT count(sid) FROM student_class WHERE cid=:cid');
+			$stmt->execute(array('cid' => $cid));
+
+			return $stmt->fetchColumn();
+
+		} catch(PDOException $e) {
+		    echo '<p class="bg-danger">'.$e->getMessage().'</p>';
+		}
+    }
+
+    public function get_students_in_class($cid){
+    	try {
+			$stmt = $this->_db->prepare('SELECT * FROM student, student_class WHERE student.sid = student_class.sid and student_class.cid=:cid');
+			$stmt->execute(array('cid' => $cid));
+
+			return $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+		} catch(PDOException $e) {
+		    echo '<p class="bg-danger">'.$e->getMessage().'</p>';
+		}
+    }
 
  
 
