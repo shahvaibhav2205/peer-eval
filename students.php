@@ -71,17 +71,24 @@ if(isset($_POST["Import"])){
 
 
       if(!in_array($sid, $sids)) {
-        $noadded++;
-        $stmt2 = $db->prepare("INSERT into student_class(sid,cid,groupid) values ('".$sid."',$cid,'".$getData[3]."')");
-        if(!$stmt2->execute())
-        {
+            $noadded++;
+            $str = 'abcdefghijklmnopqrsturvwxyz1234567890';
+            $randomKey = substr( str_shuffle($str), 0, 8);
 
-          $message = 'ivalid';
-        }
-        else {
+            $stmt2 = $db->prepare("INSERT into student_class(sid, cid, groupid, randomkey) values (:sid,:cid,:groupid,:randomKey)");
 
-          $message = 'upload';
-        }
+            $stmt2->bindParam(":sid", $sid, PDO::PARAM_INT);
+            $stmt2->bindParam(":cid", $cid, PDO::PARAM_INT);
+            $stmt2->bindParam(":groupid", $getData[3], PDO::PARAM_STR);
+            $stmt2->bindParam(":randomKey", $randomKey, PDO::PARAM_STR);
+
+            if (!$stmt2->execute()) {
+
+              $message = 'ivalid';
+            } else {
+
+              $message = 'upload';
+            }
       }
 
     }
@@ -184,9 +191,9 @@ require('layout/header.php');
     }
     ?>
 
+      </div>
+    </div>
   </div>
-</div>
-</div>
 </body>
 
 <?php

@@ -35,8 +35,10 @@ include('classes/students.php');
 include('classes/templates.php');
 include('classes/classes.php');
 include('classes/phpmailer/mail.php');
+include('classes/GlobalFunctions.php');
 $user = new User($db);
 $student = new Students($db);
 $template = new Templates($db);
 $class = new Classes($db);
+$globalFunctions = new GlobalFunctions();
 ?>

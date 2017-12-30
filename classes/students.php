@@ -64,5 +64,38 @@ SQL;
         }
     }
 
+    public function getEvaluations($completed = false)
+    {
+        $studentId = $_SESSION['sid'];
+
+        if (empty($studentId)) {
+            echo "Student is not set, please report or re-login.";
+            exit();
+        }
+        $query =<<<SQL
+        SELECT class.semester, class.year, class.cprefix, class.cnumber, class.csection, class.cname
+        , eval.title, eval.deadline, student_class.status, eval.eid
+        FROM student_class
+        JOIN class ON student_class.cid = class.cid
+        JOIN eval ON class.cid = eval.cid
+        WHERE student_class.sid = :studentId
+SQL;
+        if ($completed) {
+            $query .= " and student_class.status = 1";
+        } else {
+            $query .= " and student_class.status = 0";
+        }
+
+        $stmt = $this->_db->prepare($query);
+        $stmt->bindParam(":studentId", $studentId, PDO::PARAM_INT);
+        $output = $stmt->execute();
+
+        if (!empty($output)) {
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        } else {
+            return false;
+        }
+    }
+
 }
 ?>
