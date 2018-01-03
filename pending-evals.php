@@ -25,14 +25,6 @@ require('layout/header.php');
 
         ?>
         <div class="member-content">
-<!--            <div class="row">-->
-<!--                <div class="col-sm-12">-->
-<!---->
-<!---->
-<!--                    <a href="manage-classes.php" class="btn btn-primary btn-sm float-right">Add Class</a>-->
-<!--                </div>-->
-<!--            </div>-->
-<!--            <br>-->
             <table class="table table-responsive">
                 <tr>
                     <th> Semester </th>
@@ -45,7 +37,6 @@ require('layout/header.php');
                 $evals = $student->getEvaluations();
                 foreach($evals as $eval)
                 {
-
                     ?>
                     <tr>
                         <td><?php echo $eval['semester']." ".$eval['year']; ?></td>

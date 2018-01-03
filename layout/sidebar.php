@@ -20,7 +20,7 @@
             <a href="pending-evals.php">Pending</a>
         </li>
         <li>
-            <a href="completed-evals.php">Completed Evaluations</a>
+            <a href="completed-evals.php">Completed</a>
         </li>
         <?php
         } else { // if user is a faculty

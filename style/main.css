@@ -11,6 +11,14 @@
 .lead.bg-success{
 	color: #fff;
 }
+.lead text#peer-name {
+	color: #636363;
+}
+.lead.question {
+	margin-top: 0.5rem;
+	font-size: 1rem;
+	margin-bottom: 0.5rem;
+}
 .table-responsive{
 	display: table !important;
 	font-size:0.75rem;
