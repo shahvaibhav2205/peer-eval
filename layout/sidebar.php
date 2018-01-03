@@ -2,7 +2,7 @@
     <div class="sidebar-header">
         <h4>Peer Evals</h4>
     </div>
-
+    
     <ul class="list-unstyled components">
         <p>
             <?php
@@ -30,6 +30,9 @@
         </li>
         <li>
             <a href="classes.php">Classes</a>
+        </li>
+        <li>
+            <a href="peerevals.php">Peer Evals</a>
         </li>
 
         <?php

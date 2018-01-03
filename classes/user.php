@@ -121,6 +121,18 @@ class User extends Password{
 		}
 	}
 
+	public function get_faculty_details($fid){
+		try {
+			$stmt = $this->_db->prepare('SELECT * FROM faculty WHERE fid = :fid');
+			$stmt->execute(array('fid' => $fid));
+
+			return $stmt->fetch();
+
+		} catch(PDOException $e) {
+			echo '<p class="bg-danger">'.$e->getMessage().'</p>';
+		}
+	}
+
 }
 
 

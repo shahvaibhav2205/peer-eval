@@ -1,3 +1,6 @@
+body{
+	background: white;
+}
 .error{
 	color:#fff;
 	padding:0.5rem 0;
@@ -57,4 +60,17 @@ p.bg-primary, p.bg-danger, p.bg-success{
 
 a:hover, a:focus{
 	text-decoration: none;
+}
+label.small{
+	font-size:0.8rem;
+	margin-top: 1rem;
+}
+.message{
+	margin-top: 0.5rem;
+	color:#c00;
+	font-style: italic;;
+	font-size:0.8rem;
+}
+.btn-block{
+	margin: 1rem 0 1rem 0;
 }

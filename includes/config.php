@@ -34,6 +34,7 @@ include('classes/user.php');
 include('classes/students.php');
 include('classes/templates.php');
 include('classes/classes.php');
+include('classes/peerevals.php');
 include('classes/phpmailer/mail.php');
 include('classes/GlobalFunctions.php');
 include('classes/eval.php');
@@ -47,4 +48,6 @@ $globalFunctions = new GlobalFunctions();
 $eval = new Evaluations($db);
 $fields = new Fields($db);
 $studentEvals = new StudentEvals($db);
+$peereval = new PeerEvals($db);
+
 ?>

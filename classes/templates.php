@@ -46,7 +46,6 @@ class Templates{
 		    echo '<p class="bg-danger">'.$e->getMessage().'</p>';
 		}
     }
-
  
 
 }
