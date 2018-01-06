@@ -49,11 +49,9 @@ if (empty($_POST)) { // create the array while loading the page
     
     foreach ($groupMembers as $k=>$groupMember) {
 		foreach ($questions as $l=>$question) {
-			$evalFieldResponses[] = [intval($responseIds[($questionCount*$k)+$l]), $question['field_id'], intval($fieldValues[($questionCount*$k)+$l]), $groupMember['sid'], ""];
+			$evalFieldResponses[] = [intval($responseIds[($questionCount*$k)+$l]), $question['field_id'], intval($fieldValues[$k][$l]), $groupMember['sid'], ""];
         }
     }
-//      var_dump($evalFieldResponses);
-//	    exit();
     
     foreach ($evalFieldResponses as $k=>$evalFieldResponse) { // time to insert or update all responses
         if (empty($evalFieldResponse[0]) || $evalFieldResponse[0] == -1 ) { //means it has no student_eval row id, time to insert.
@@ -67,6 +65,8 @@ if (empty($_POST)) { // create the array while loading the page
     }
 }
 
+//      var_dump($evalFieldResponses);
+//	    exit();
 echo "<br>";
 
 //include header template
@@ -105,16 +105,25 @@ require('layout/header.php');
                         ><?=($l+1).") ".$question['caption']." ? ".$question['weight']."%" ?></p>
 <!--                        <input type="hidden" name="fieldId[]" value="--><?//=$question['field_id'] ?><!--" >-->
                         <input type="hidden" name="vid[]" value="<?=(!empty($evalFieldResponses[($questionCount*$k)+$l][0])) ? $evalFieldResponses[($questionCount*$k)+$l][0] : -1; ?>" >  <!--saving to -1 since empty string is int typecasted to 0-->
-                        <input type="number" name="peerValue[]" class="form-control col-sm-12" placeholder="Rate.." value="<?=(!empty($evalFieldResponses[($questionCount*$k)+$l][2])) ? $evalFieldResponses[($questionCount*$k)+$l][2] : ""; ?>">
-                        
-<!--                        <div class="btn-group mr-2" role="group" aria-label="First group">-->
-<!--                            <button type="button" class="btn btn-secondary">1</button>-->
-<!--                            <button type="button" class="btn btn-secondary">2</button>-->
-<!--                            <button type="button" class="btn btn-secondary">3</button>-->
-<!--                            <button type="button" class="btn btn-secondary">4</button>-->
-<!--                        </div>-->
-                        
-					    <?php } ?>
+                        <div class="btn-group score-rating-div" data-toggle="buttons">
+                            <?php
+                            for ($i = 1; $i <= intval($question['max_score']); $i++) {
+                                ?>
+                                <label
+                                        class="btn btn-secondary <?php echo ($evalFieldResponses[($questionCount*$k)+$l][2] == $i) ?  'active': ''; ?>"
+                                        style="width:<?=100/intval($question['max_score']);?>%"
+                                >
+                                    <input type="radio"
+                                           name="peerValue[<?=$k;?>][<?=$l;?>]"
+                                           id="rating_<?=$k;?>_<?=$l;?>_<?=$i;?>"
+                                           autocomplete="off"
+                                           value="<?=$i;?>"
+                                           <?php echo ($evalFieldResponses[($questionCount*$k)+$l][2] == $i) ?  "checked" : ""; ?>
+                                    > <?=$i;?>
+                                </label>
+                                <?php } ?>
+                            </div>
+                        <?php } ?>
                         <br><br>
                     </div>
                     <?php } ?>
