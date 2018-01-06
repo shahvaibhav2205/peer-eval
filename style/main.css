@@ -74,10 +74,13 @@ label.small{
 .btn-block{
 	margin: 1rem 0 1rem 0;
 }
+.dataTables_wrapper {
+	margin-top: 2rem !important;
+	padding:0 !important;
+}
 .score-rating-div{
 	width: 100%;
 }
 
 .btn.rating-buttons{
-
 }
