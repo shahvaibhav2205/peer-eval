@@ -29,16 +29,18 @@ if (empty($currEval)) {
     $studentSelfId = $_SESSION['sid'];
 }
 
+
 //This array effectively represents rows of student_eval table with columns -> [vid, fid, value, filler, comment] for eid and filledfor is set.
 $evalFieldResponses = [];
 
 if (empty($_POST)) { // create the array while loading the page
 	$savedEvalResponses = $studentEvals->getFieldResponses($evalId, $studentSelfId);
-	
+
+    $x = 0;
 	foreach ($groupMembers as $k=>$groupMember) {
 		foreach ($questions as $l=>$question) {
-		    if ($savedEvalResponses[($questionCount*$k)+$l]['fid'] == $question['field_id'] && $savedEvalResponses[($questionCount*$k)+$l]['filler'] == $groupMember['sid']) { // since responses will be saved in order, this is formality check
-				$evalFieldResponses[] = [$savedEvalResponses[($questionCount*$k)+$l]['vid'], $question['field_id'], $savedEvalResponses[($questionCount*$k)+$l]['value'], $groupMember['sid'], $savedEvalResponses[($questionCount*$k)+$l]['comment']];
+	   		if (!empty($savedEvalResponses)) {
+                $evalFieldResponses[] = [$savedEvalResponses[($questionCount*$k)+$l]['vid'], $question['field_id'], $savedEvalResponses[($questionCount*$k)+$l]['value'], $groupMember['sid'], $savedEvalResponses[($questionCount*$k)+$l]['comment']];
             }
 		}
 	}
@@ -46,19 +48,27 @@ if (empty($_POST)) { // create the array while loading the page
 } else if (!empty($_POST['saveSubmit']) || !empty($_POST['finalSubmit'])) {
     $fieldValues = $_POST['peerValue'];
     $responseIds = $_POST['vid'];
-    
+
     foreach ($groupMembers as $k=>$groupMember) {
 		foreach ($questions as $l=>$question) {
-			$evalFieldResponses[] = [intval($responseIds[($questionCount*$k)+$l]), $question['field_id'], intval($fieldValues[$k][$l]), $groupMember['sid'], ""];
+			$evalFieldResponses[] = [intval($responseIds[($questionCount*$k)+$l]), $question['field_id'], (!empty($fieldValues[$k]) && !empty($fieldValues[$k][$l])) ? intval($fieldValues[$k][$l]) : 0, $groupMember['sid'], ""];
         }
     }
     
-    foreach ($evalFieldResponses as $k=>$evalFieldResponse) { // time to insert or update all responses
-        if (empty($evalFieldResponse[0]) || $evalFieldResponse[0] == -1 ) { //means it has no student_eval row id, time to insert.
+    //print_r($evalFieldResponses);
+    $stmt = $db->prepare('select count(*) from student_eval where filler=:filler and eid=:eid');
+    $stmt->execute(array('eid' => $evalId, 'filler' => $studentSelfId));
+    $isAlready = $stmt->fetchColumn();
+
+
+    foreach ($evalFieldResponses as $k=>$evalFieldResponse) { // time to insert or update all responses    
+        
+        if ((empty($evalFieldResponse[0]) || $evalFieldResponse[0] == -1) && $isAlready==0) { //means it has no student_eval row id, time to insert.
 			$stmt = $db->prepare('INSERT INTO student_eval(eid, fid, value, filler, filledfor, comment) VALUES (:eid, :fid, :value, :filler, :filledfor, :comment)');
-			$stmt->execute(array('eid' => $evalId, 'fid' => $evalFieldResponse[1], 'value' => $evalFieldResponse[2], 'filler' => $evalFieldResponse[3], 'filledfor' => $studentSelfId, 'comment' => ""));
+			$stmt->execute(array('eid' => $evalId, 'fid' => $evalFieldResponse[1], 'value' => $evalFieldResponse[2], 'filler' => $studentSelfId, 'filledfor' => $evalFieldResponse[3], 'comment' => ""));
 			$evalFieldResponses[$k][0] = $db->lastInsertId();
         } else {
+           
 			$stmt = $db->prepare('UPDATE student_eval SET value = :value,  comment = :comment WHERE vid = :vid');
 			$stmt->execute(array('value' => $evalFieldResponse[2], 'comment' => "", 'vid' => $evalFieldResponse[0]));
         }
@@ -108,9 +118,15 @@ require('layout/header.php');
                         <div class="btn-group score-rating-div" data-toggle="buttons">
                             <?php
                             for ($i = 1; $i <= intval($question['max_score']); $i++) {
+                            $classColor=$isChecked=0;
+                            if(!empty($evalFieldResponses)){
+
+                                $classColor = ($evalFieldResponses[($questionCount*$k)+$l][2] == $i) ?  'active': '';
+                                $isChecked = ($evalFieldResponses[($questionCount*$k)+$l][2] == $i) ?  "checked" : "";
+                            } 
                                 ?>
                                 <label
-                                        class="btn btn-secondary <?php echo ($evalFieldResponses[($questionCount*$k)+$l][2] == $i) ?  'active': ''; ?>"
+                                        class="btn btn-secondary <?php echo $classColor ?>"
                                         style="width:<?=100/intval($question['max_score']);?>%"
                                 >
                                     <input type="radio"
@@ -118,7 +134,7 @@ require('layout/header.php');
                                            id="rating_<?=$k;?>_<?=$l;?>_<?=$i;?>"
                                            autocomplete="off"
                                            value="<?=$i;?>"
-                                           <?php echo ($evalFieldResponses[($questionCount*$k)+$l][2] == $i) ?  "checked" : ""; ?>
+                                           <?php echo $isChecked; ?>
                                     > <?=$i;?>
                                 </label>
                                 <?php } ?>
