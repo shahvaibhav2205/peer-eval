@@ -36,10 +36,18 @@ include('classes/templates.php');
 include('classes/classes.php');
 include('classes/peerevals.php');
 include('classes/phpmailer/mail.php');
+include('classes/GlobalFunctions.php');
+include('classes/eval.php');
+include('classes/fields.php');
+include('classes/studentEvals.php');
 $user = new User($db);
 $student = new Students($db);
 $template = new Templates($db);
 $class = new Classes($db);
+$globalFunctions = new GlobalFunctions();
+$eval = new Evaluations($db);
+$fields = new Fields($db);
+$studentEvals = new StudentEvals($db);
 $peereval = new PeerEvals($db);
 
 ?>
